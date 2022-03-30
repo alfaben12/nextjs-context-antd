@@ -1,20 +1,24 @@
-import { Form, Input, Checkbox, Button } from "antd";
-import { useAuth } from "../../context/Auth/Context";
+import { Form, Input, Button } from "antd";
+import { useEffect } from "react";
+import { useAuth } from "../../context/AuthContext/Context";
+import { useRouter } from "next/router";
 
 const SigninPage = () => {
+    const router = useRouter();
     const { auth, signin } = useAuth();
     const onFinish = (values: any) => {
-        const body = {
-            name: values.name,
-            token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
-        };
-
-        signin(body);
+        signin(values);
     };
 
     const onFinishFailed = (errorInfo: any) => {
         console.log("Failed:", errorInfo);
     };
+
+    useEffect(() => {
+        if (auth.data?.isAuth) {
+            router.push("/dashboard");
+        }
+    }, [auth.data]);
 
     return (
         <Form
@@ -26,8 +30,8 @@ const SigninPage = () => {
         >
             {auth.isLoading ? "loading" : "okee"}
             <Form.Item
-                label="Username"
-                name="name"
+                label="email"
+                name="email"
                 rules={[
                     { required: true, message: "Please input your username!" },
                 ]}

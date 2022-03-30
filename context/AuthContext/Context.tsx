@@ -1,13 +1,17 @@
+import { AxiosResponse } from "axios";
 import { createContext, useContext, useState } from "react";
 import createPersistedState from "use-persisted-state";
-import { AuthContextType, IAuth } from "./Type";
+import api from "../../utils/api";
+import { AuthContextType, AuthResponse } from "./Type";
 
-const usePersistState = createPersistedState<IAuth>("simulek:auth");
+const usePersistState = createPersistedState<AuthResponse>("simulek:auth");
 const AuthContext = createContext<AuthContextType>({
     auth: {
         isLoading: false,
-        name: "",
-        token: "",
+        status: false,
+        message: "",
+        statusCode: 200,
+        data: null,
     },
     signin: () => {},
     signout: () => {},
@@ -16,34 +20,28 @@ const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: any) => {
     const [auth, setAuth] = usePersistState({
         isLoading: false,
-        isAuth: false,
-        name: "",
-        token: "",
+        status: false,
+        message: "",
+        statusCode: 200,
+        data: null,
     });
 
-    const signin = (body: { name: any; token: any }) => {
-        setAuth({
-            isLoading: true,
-            isAuth: false,
-            name: "",
-            token: "",
-        });
+    const signin = async (body: any) => {
+        const { status, data }: AxiosResponse<AuthResponse> = await api.post(
+            `/auth/signin`,
+            body
+        );
 
-        setTimeout(() => {
-            setAuth({
-                isLoading: false,
-                isAuth: true,
-                name: body.name,
-                token: body.token,
-            });
-        }, 2000);
+        setAuth(data);
     };
 
     const signout = (id: string) => {
         setAuth({
             isLoading: false,
-            name: "",
-            token: "",
+            status: false,
+            message: "",
+            statusCode: 200,
+            data: null,
         });
     };
     return (

@@ -1,4 +1,4 @@
-import { Form, Input, Checkbox, Button, Card } from "antd";
+import { Card } from "antd";
 import LayoutComponent from "../components/Layout/LayoutComponent";
 
 const antdPage = () => {
@@ -8,7 +8,7 @@ const antdPage = () => {
     };
 
     return (
-        <LayoutComponent>
+        <LayoutComponent title="Ant Design Page">
             <Card title="Card Title">
                 <Card.Grid style={gridStyle}>Content</Card.Grid>
                 <Card.Grid hoverable={false} style={gridStyle}>

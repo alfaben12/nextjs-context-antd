@@ -1,48 +1,59 @@
-import { Layout, Menu, Breadcrumb } from "antd";
-import {
-    UserOutlined,
-    LaptopOutlined,
-    NotificationOutlined,
-} from "@ant-design/icons";
-import { ReactNode } from "react";
-import HeaderComponent from "../Header/HeaderComponent";
-import SidebarComponent from "../Sidebar/SidebarComponent";
-import { useAuth } from "../../context/Auth/Context";
+import { Layout, PageHeader } from "antd";
+import React, { ReactNode, useState } from "react";
+import { useAuth } from "../../context/AuthContext/Context";
 import SigninPage from "../../pages/signin";
-
-const { SubMenu } = Menu;
-const { Header, Content, Sider } = Layout;
+const { Content } = Layout;
+import { useRouter } from "next/router";
+import SidebarComponent from "../Sidebar/SidebarComponent";
+import HeaderComponent from "../Header/HeaderComponent";
 
 interface LayoutProps {
     children: ReactNode;
+    title?: string;
 }
 
 export default function LayoutComponent(props: LayoutProps) {
-    const { children } = props;
+    const { children, title } = props;
     const { auth } = useAuth();
+    const router = useRouter();
+    const [collapsed, setCollapsed] = useState(false);
+    const openSlider = () => {
+        setCollapsed(!collapsed);
+    };
 
-    return auth.isAuth ? (
+    return auth.data?.isAuth ? (
         <Layout>
-            <HeaderComponent />
-            <Layout>
-                <SidebarComponent />
-                <Layout style={{ padding: "0 24px 24px" }}>
-                    <Breadcrumb style={{ margin: "16px 0" }}>
-                        <Breadcrumb.Item>Home</Breadcrumb.Item>
-                        <Breadcrumb.Item>List</Breadcrumb.Item>
-                        <Breadcrumb.Item>App</Breadcrumb.Item>
-                    </Breadcrumb>
-                    <Content
-                        className="site-layout-background"
+            <SidebarComponent collapsed={collapsed} />
+            <Layout className="site-layout">
+                <HeaderComponent
+                    collapsed={collapsed}
+                    openSlider={() => openSlider()}
+                />
+
+                {title ? (
+                    <PageHeader
+                        className="site-page-header"
+                        onBack={() => router.back()}
+                        title={title}
+                    />
+                ) : (
+                    <div
                         style={{
-                            padding: 24,
-                            margin: 0,
-                            minHeight: 280,
+                            paddingBottom: "25px",
                         }}
-                    >
-                        {children}
-                    </Content>
-                </Layout>
+                    ></div>
+                )}
+                <Content
+                    className="site-layout-background"
+                    style={{
+                        margin: "0px 25px",
+                        padding: 25,
+                        minHeight: "100vh",
+                        overflow: "auto",
+                    }}
+                >
+                    {children}
+                </Content>
             </Layout>
         </Layout>
     ) : (
